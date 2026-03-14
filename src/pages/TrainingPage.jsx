@@ -398,10 +398,13 @@ export default function TrainingPage() {
         flex: 1,
         display: 'flex',
         flexDirection: 'column',
-        maxWidth: 500,
+        maxWidth: { xs: 500, md: '100%' },
         mx: 'auto',
         width: '100%',
         p: 2,
+        '@media (orientation: landscape) and (min-width: 600px)': {
+          maxWidth: 960,
+        },
       }}
     >
       {/* Header */}
@@ -437,103 +440,133 @@ export default function TrainingPage() {
         </Typography>
       </Box>
 
-      {/* Exercise Card */}
-      <Paper
-        elevation={0}
+      {/* Main content area: column portrait, row landscape */}
+      <Box
         sx={{
-          flex: '0 0 auto',
+          flex: 1,
           display: 'flex',
           flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'center',
-          py: 4,
-          px: 3,
-          mb: 2,
-          border: '3px solid',
-          transition: 'all 0.3s ease',
-          borderColor:
-            feedback === 'correct'
-              ? 'success.main'
-              : feedback === 'wrong'
-              ? 'error.main'
-              : 'primary.light',
-          bgcolor:
-            feedback === 'correct'
-              ? 'rgba(0, 200, 83, 0.05)'
-              : feedback === 'wrong'
-              ? 'rgba(255, 23, 68, 0.05)'
-              : 'white',
+          gap: 2,
+          '@media (orientation: landscape) and (min-width: 600px)': {
+            flexDirection: 'row',
+            alignItems: 'stretch',
+          },
         }}
       >
-        <Typography
-          variant="h3"
+        {/* Exercise Card */}
+        <Paper
+          elevation={0}
           sx={{
-            fontSize: { xs: '3rem', sm: '4rem' },
-            color: 'text.primary',
-            letterSpacing: 4,
-          }}
-        >
-          {current.a} {symbol} {current.b} =
-        </Typography>
-
-        <Box
-          sx={{
-            mt: 2,
-            minWidth: 120,
-            minHeight: 64,
+            flex: '0 0 auto',
             display: 'flex',
+            flexDirection: 'column',
             alignItems: 'center',
             justifyContent: 'center',
-            borderBottom: '3px solid',
-            borderColor: feedback
-              ? feedback === 'correct'
+            py: 4,
+            px: 3,
+            border: '3px solid',
+            transition: 'all 0.3s ease',
+            borderColor:
+              feedback === 'correct'
                 ? 'success.main'
-                : 'error.main'
-              : 'primary.main',
+                : feedback === 'wrong'
+                ? 'error.main'
+                : 'primary.light',
+            bgcolor:
+              feedback === 'correct'
+                ? 'rgba(0, 200, 83, 0.05)'
+                : feedback === 'wrong'
+                ? 'rgba(255, 23, 68, 0.05)'
+                : 'white',
+            '@media (orientation: landscape) and (min-width: 600px)': {
+              flex: '1 1 50%',
+              mb: 0,
+            },
           }}
         >
           <Typography
             variant="h3"
             sx={{
               fontSize: { xs: '3rem', sm: '4rem' },
-              color: feedback
+              color: 'text.primary',
+              letterSpacing: 4,
+            }}
+          >
+            {current.a} {symbol} {current.b} =
+          </Typography>
+
+          <Box
+            sx={{
+              mt: 2,
+              minWidth: 120,
+              minHeight: 64,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              borderBottom: '3px solid',
+              borderColor: feedback
                 ? feedback === 'correct'
                   ? 'success.main'
                   : 'error.main'
                 : 'primary.main',
-              fontWeight: 800,
             }}
           >
-            {input || '\u00A0'}
-          </Typography>
-        </Box>
-
-        {/* Show correct answer on wrong */}
-        {feedback === 'wrong' && (
-          <Fade in>
             <Typography
-              variant="h5"
-              color="error.main"
-              sx={{ mt: 1.5, fontWeight: 700 }}
+              variant="h3"
+              sx={{
+                fontSize: { xs: '3rem', sm: '4rem' },
+                color: feedback
+                  ? feedback === 'correct'
+                    ? 'success.main'
+                    : 'error.main'
+                  : 'primary.main',
+                fontWeight: 800,
+              }}
             >
-              Правильный ответ: {correctAnswer}
+              {input || '\u00A0'}
             </Typography>
-          </Fade>
-        )}
-      </Paper>
+          </Box>
 
-      {/* Number Keyboard */}
-      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', justifyContent: 'flex-end' }}>
+          {/* Show correct answer on wrong */}
+          {feedback === 'wrong' && (
+            <Fade in>
+              <Typography
+                variant="h5"
+                color="error.main"
+                sx={{ mt: 1.5, fontWeight: 700 }}
+              >
+                Правильный ответ: {correctAnswer}
+              </Typography>
+            </Fade>
+          )}
+        </Paper>
+
+        {/* Number Keyboard */}
         <Box
           sx={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(3, 1fr)',
-            gap: 1.5,
-            maxWidth: 360,
-            mx: 'auto',
-            width: '100%',
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'flex-end',
+            '@media (orientation: landscape) and (min-width: 600px)': {
+              flex: '1 1 50%',
+              justifyContent: 'center',
+            },
           }}
         >
+          <Box
+            sx={{
+              display: 'grid',
+              gridTemplateColumns: 'repeat(3, 1fr)',
+              gap: 1.5,
+              maxWidth: 360,
+              mx: 'auto',
+              width: '100%',
+              '@media (orientation: landscape) and (min-width: 600px)': {
+                gap: 1,
+              },
+            }}
+          >
           {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((digit) => (
             <Button
               key={digit}
@@ -562,6 +595,11 @@ export default function TrainingPage() {
                   color: 'grey.400',
                 },
                 minHeight: 64,
+                '@media (orientation: landscape) and (min-width: 600px)': {
+                  py: 1,
+                  minHeight: 48,
+                  fontSize: '1.8rem',
+                },
               }}
             >
               {digit}
@@ -581,6 +619,10 @@ export default function TrainingPage() {
               borderColor: 'grey.300',
               '&:hover': { bgcolor: 'grey.300' },
               minHeight: 56,
+              '@media (orientation: landscape) and (min-width: 600px)': {
+                py: 1,
+                minHeight: 48,
+              },
             }}
           >
             <BackspaceRounded />
@@ -605,6 +647,11 @@ export default function TrainingPage() {
                 borderColor: 'primary.light',
               },
               minHeight: 64,
+              '@media (orientation: landscape) and (min-width: 600px)': {
+                py: 1,
+                minHeight: 48,
+                fontSize: '1.8rem',
+              },
             }}
           >
             0
@@ -629,12 +676,17 @@ export default function TrainingPage() {
                 background: 'linear-gradient(135deg, #651fff 0%, #6200ea 100%)',
               },
               minHeight: 56,
+              '@media (orientation: landscape) and (min-width: 600px)': {
+                py: 1,
+                minHeight: 48,
+              },
             }}
           >
             <CheckRounded sx={{ fontSize: 32 }} />
           </Button>
+          </Box>
         </Box>
-      </Box>
+      </Box>{/* end landscape row */}
     </Box>
   );
 }
