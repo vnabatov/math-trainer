@@ -155,9 +155,16 @@ function BoxBadge({ box }) {
     4: 'primary',
     5: 'success',
   };
+  const labels = {
+    1: 'Новичок',
+    2: 'Ученик',
+    3: 'Знаток',
+    4: 'Мастер',
+    5: 'Эксперт',
+  };
   return (
     <Chip
-      label={`Box ${box}`}
+      label={labels[box] || `Ур. ${box}`}
       size="small"
       color={colors[box] || 'default'}
       sx={{ fontWeight: 600, minWidth: 64, fontSize: '0.85rem', height: 30 }}
