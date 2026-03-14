@@ -404,6 +404,8 @@ export default function TrainingPage() {
         p: 2,
         '@media (orientation: landscape) and (min-width: 600px)': {
           maxWidth: 960,
+          py: 0.5,
+          px: 2,
         },
       }}
     >
@@ -414,6 +416,9 @@ export default function TrainingPage() {
           alignItems: 'center',
           mb: 2,
           gap: 1,
+          '@media (orientation: landscape) and (min-width: 600px)': {
+            mb: 0.5,
+          },
         }}
       >
         <IconButton onClick={() => navigate('/')} size="small">
@@ -450,6 +455,7 @@ export default function TrainingPage() {
           '@media (orientation: landscape) and (min-width: 600px)': {
             flexDirection: 'row',
             alignItems: 'stretch',
+            gap: 1.5,
           },
         }}
       >
@@ -481,6 +487,7 @@ export default function TrainingPage() {
             '@media (orientation: landscape) and (min-width: 600px)': {
               flex: '1 1 50%',
               mb: 0,
+              py: 2,
             },
           }}
         >
@@ -509,6 +516,10 @@ export default function TrainingPage() {
                   ? 'success.main'
                   : 'error.main'
                 : 'primary.main',
+              '@media (orientation: landscape) and (min-width: 600px)': {
+                mt: 1,
+                minHeight: 48,
+              },
             }}
           >
             <Typography
@@ -563,7 +574,7 @@ export default function TrainingPage() {
               mx: 'auto',
               width: '100%',
               '@media (orientation: landscape) and (min-width: 600px)': {
-                gap: 1,
+                gap: 0.75,
               },
             }}
           >
@@ -596,9 +607,9 @@ export default function TrainingPage() {
                 },
                 minHeight: 64,
                 '@media (orientation: landscape) and (min-width: 600px)': {
-                  py: 1,
-                  minHeight: 48,
-                  fontSize: '1.8rem',
+                  py: 0.5,
+                  minHeight: 40,
+                  fontSize: '1.6rem',
                 },
               }}
             >
@@ -620,8 +631,8 @@ export default function TrainingPage() {
               '&:hover': { bgcolor: 'grey.300' },
               minHeight: 56,
               '@media (orientation: landscape) and (min-width: 600px)': {
-                py: 1,
-                minHeight: 48,
+                py: 0.5,
+                minHeight: 40,
               },
             }}
           >
@@ -648,9 +659,9 @@ export default function TrainingPage() {
               },
               minHeight: 64,
               '@media (orientation: landscape) and (min-width: 600px)': {
-                py: 1,
-                minHeight: 48,
-                fontSize: '1.8rem',
+                py: 0.5,
+                minHeight: 40,
+                fontSize: '1.6rem',
               },
             }}
           >
@@ -677,8 +688,8 @@ export default function TrainingPage() {
               },
               minHeight: 56,
               '@media (orientation: landscape) and (min-width: 600px)': {
-                py: 1,
-                minHeight: 48,
+                py: 0.5,
+                minHeight: 40,
               },
             }}
           >
