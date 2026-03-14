@@ -6,35 +6,49 @@ import Button from '@mui/material/Button';
 import Chip from '@mui/material/Chip';
 import Paper from '@mui/material/Paper';
 import Stack from '@mui/material/Stack';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import PlayArrowRounded from '@mui/icons-material/PlayArrowRounded';
 import BarChartRounded from '@mui/icons-material/BarChartRounded';
-import { loadData, saveData, saveSelectedNumbers } from '../utils/storage';
+import { loadData, saveData, saveSelections, OPERATIONS } from '../utils/storage';
 
-const ALL_NUMBERS = [2, 3, 4, 5, 6, 7, 8, 9];
+const OP_KEYS = ['multiply', 'add', 'subtract'];
 
 export default function HomePage() {
   const navigate = useNavigate();
-  const [selected, setSelected] = useState([2, 3, 4, 5]);
+  const [operation, setOperation] = useState('multiply');
+  const [selections, setSelections] = useState({
+    multiply: [2, 3, 4, 5],
+    add: [1, 2, 3, 4, 5],
+    subtract: [1, 2, 3, 4, 5],
+  });
 
   useEffect(() => {
     const data = loadData();
-    if (data.selectedNumbers && data.selectedNumbers.length > 0) {
-      setSelected(data.selectedNumbers);
+    if (data.selections) {
+      setSelections(data.selections);
+    }
+    if (data.selectedOperation) {
+      setOperation(data.selectedOperation);
     }
   }, []);
 
+  const currentNumbers = OPERATIONS[operation].numbers;
+  const selected = selections[operation] || [];
+
   const toggleNumber = (num) => {
-    setSelected((prev) => {
-      const next = prev.includes(num)
-        ? prev.filter((n) => n !== num)
-        : [...prev, num].sort();
-      return next;
+    setSelections((prev) => {
+      const current = prev[operation] || [];
+      const next = current.includes(num)
+        ? current.filter((n) => n !== num)
+        : [...current, num].sort((a, b) => a - b);
+      return { ...prev, [operation]: next };
     });
   };
 
   const handleStart = () => {
     const data = loadData();
-    const updated = saveSelectedNumbers(data, selected);
+    const updated = saveSelections(data, operation, selected);
     saveData(updated);
     navigate('/train');
   };
@@ -69,56 +83,89 @@ export default function HomePage() {
       <Typography
         variant="h6"
         color="text.secondary"
-        sx={{ mb: 4, textAlign: 'center', fontWeight: 600 }}
+        sx={{ mb: 3, textAlign: 'center', fontWeight: 600 }}
       >
-        Learn the multiplication table!
+        Practice math skills!
       </Typography>
 
+      {/* Operation Tabs */}
       <Paper
         elevation={0}
         sx={{
-          p: 3,
           width: '100%',
-          bgcolor: 'white',
+          mb: 3,
           border: '2px solid',
           borderColor: 'primary.light',
-          mb: 4,
+          overflow: 'hidden',
         }}
       >
-        <Typography
-          variant="h6"
-          sx={{ mb: 2, textAlign: 'center', color: 'primary.main' }}
-        >
-          Select numbers to practice
-        </Typography>
-
-        <Box
+        <Tabs
+          value={operation}
+          onChange={(_, val) => setOperation(val)}
+          variant="fullWidth"
           sx={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: 1.5,
-            justifyContent: 'center',
+            '& .MuiTab-root': {
+              fontWeight: 700,
+              fontSize: '1rem',
+              py: 1.5,
+            },
           }}
         >
-          {ALL_NUMBERS.map((num) => (
-            <Chip
-              key={num}
-              label={num}
-              onClick={() => toggleNumber(num)}
-              color={selected.includes(num) ? 'primary' : 'default'}
-              variant={selected.includes(num) ? 'filled' : 'outlined'}
-              sx={{
-                minWidth: 64,
-                fontSize: '1.3rem',
-                fontWeight: 700,
-                transition: 'all 0.2s ease',
-                transform: selected.includes(num) ? 'scale(1.08)' : 'scale(1)',
-                boxShadow: selected.includes(num)
-                  ? '0 4px 12px rgba(124, 77, 255, 0.3)'
-                  : 'none',
-              }}
+          {OP_KEYS.map((op) => (
+            <Tab
+              key={op}
+              value={op}
+              label={`${OPERATIONS[op].symbol} ${OPERATIONS[op].label}`}
             />
           ))}
+        </Tabs>
+
+        <Box sx={{ p: 3 }}>
+          <Typography
+            variant="h6"
+            sx={{ mb: 2, textAlign: 'center', color: 'primary.main' }}
+          >
+            Select numbers to practice
+          </Typography>
+
+          <Box
+            sx={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              gap: 1.5,
+              justifyContent: 'center',
+            }}
+          >
+            {currentNumbers.map((num) => (
+              <Chip
+                key={num}
+                label={num}
+                onClick={() => toggleNumber(num)}
+                color={selected.includes(num) ? 'primary' : 'default'}
+                variant={selected.includes(num) ? 'filled' : 'outlined'}
+                sx={{
+                  minWidth: 56,
+                  fontSize: '1.3rem',
+                  fontWeight: 700,
+                  transition: 'all 0.2s ease',
+                  transform: selected.includes(num) ? 'scale(1.08)' : 'scale(1)',
+                  boxShadow: selected.includes(num)
+                    ? '0 4px 12px rgba(124, 77, 255, 0.3)'
+                    : 'none',
+                }}
+              />
+            ))}
+          </Box>
+
+          {operation === 'subtract' && (
+            <Typography
+              variant="caption"
+              color="text.secondary"
+              sx={{ display: 'block', textAlign: 'center', mt: 1.5 }}
+            >
+              Practice subtracting these numbers (e.g. select 3 → "10 − 3 = ?")
+            </Typography>
+          )}
         </Box>
       </Paper>
 

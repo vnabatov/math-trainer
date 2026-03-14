@@ -1,17 +1,37 @@
 import { getExerciseKey, getExerciseData } from './storage';
 
 /**
- * Generate all exercise pairs from selected numbers.
- * E.g., for [2, 3]: 2×2, 2×3, 3×2, 3×3
- * We store as min×max but present in both orders for variety.
+ * Generate all exercise pairs from selected numbers for a given operation.
+ *
+ * - multiply: a × b, a ∈ selected (2-9), b ∈ 2-9
+ * - add:      a + b, a ∈ selected (1-9), b ∈ 1-9
+ * - subtract: (s+b) − s = b, for s ∈ selected (1-9), b ∈ 1-9
+ *             stored as { a: s+b, b: s, op: 'subtract' }
  */
-export function generateExercises(selectedNumbers) {
+export function generateExercises(selectedNumbers, operation = 'multiply') {
   const exercises = [];
-  for (const a of selectedNumbers) {
-    for (let b = 2; b <= 9; b++) {
-      exercises.push({ a, b });
+
+  if (operation === 'multiply') {
+    for (const a of selectedNumbers) {
+      for (let b = 2; b <= 9; b++) {
+        exercises.push({ a, b, op: 'multiply' });
+      }
+    }
+  } else if (operation === 'add') {
+    for (const a of selectedNumbers) {
+      for (let b = 1; b <= 9; b++) {
+        exercises.push({ a, b, op: 'add' });
+      }
+    }
+  } else if (operation === 'subtract') {
+    // For each selected number s, practice subtracting s from (s+1) to (s+9)
+    for (const s of selectedNumbers) {
+      for (let b = 1; b <= 9; b++) {
+        exercises.push({ a: s + b, b: s, op: 'subtract' });
+      }
     }
   }
+
   return exercises;
 }
 
@@ -58,14 +78,14 @@ export function selectNextExercise(exercises, data, lastExercise = null) {
 
   // Avoid immediate repetition
   if (lastExercise && exercises.length > 1) {
-    const lastKey = getExerciseKey(lastExercise.a, lastExercise.b);
+    const lastKey = getExerciseKey(lastExercise.a, lastExercise.b, lastExercise.op);
     candidates = exercises.filter(
-      (e) => getExerciseKey(e.a, e.b) !== lastKey
+      (e) => getExerciseKey(e.a, e.b, e.op) !== lastKey
     );
   }
 
   const weighted = candidates.map((ex) => {
-    const exData = getExerciseData(data, ex.a, ex.b);
+    const exData = getExerciseData(data, ex.a, ex.b, ex.op);
     return { exercise: ex, weight: getWeight(exData) };
   });
 
@@ -101,7 +121,7 @@ export function getOverallMastery(exercises, data) {
   const seen = new Set();
   const unique = [];
   for (const ex of exercises) {
-    const key = getExerciseKey(ex.a, ex.b);
+    const key = getExerciseKey(ex.a, ex.b, ex.op);
     if (!seen.has(key)) {
       seen.add(key);
       unique.push(ex);
@@ -109,7 +129,7 @@ export function getOverallMastery(exercises, data) {
   }
 
   const total = unique.reduce((sum, ex) => {
-    const exData = getExerciseData(data, ex.a, ex.b);
+    const exData = getExerciseData(data, ex.a, ex.b, ex.op);
     return sum + getMasteryLevel(exData);
   }, 0);
 

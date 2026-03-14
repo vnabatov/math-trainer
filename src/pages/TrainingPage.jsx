@@ -16,6 +16,8 @@ import {
   updateExercise,
   addSession,
   getExerciseKey,
+  getAnswer,
+  getSymbol,
 } from '../utils/storage';
 import {
   generateExercises,
@@ -38,11 +40,13 @@ export default function TrainingPage() {
   const [lastExercise, setLastExercise] = useState(null);
   const feedbackTimeout = useRef(null);
 
-  // Initialize exercises from selected numbers
+  // Initialize exercises from selected numbers and operation
   useEffect(() => {
     const loadedData = loadData();
     setData(loadedData);
-    const exs = generateExercises(loadedData.selectedNumbers);
+    const op = loadedData.selectedOperation || 'multiply';
+    const nums = loadedData.selections?.[op] || loadedData.selectedNumbers || [2, 3, 4, 5];
+    const exs = generateExercises(nums, op);
     setExercises(exs);
     const first = selectNextExercise(exs, loadedData, null);
     setCurrent(first);
@@ -58,7 +62,8 @@ export default function TrainingPage() {
           correct: sessionCorrect,
           wrong: sessionWrong,
           total: TOTAL_QUESTIONS,
-          numbers: updatedData.selectedNumbers,
+          numbers: updatedData.selections?.[updatedData.selectedOperation] || updatedData.selectedNumbers,
+          operation: updatedData.selectedOperation || 'multiply',
         };
         const finalData = addSession(updatedData, session);
         saveData(finalData);
@@ -80,7 +85,7 @@ export default function TrainingPage() {
     if (!current || input === '' || feedback) return;
 
     const answer = parseInt(input, 10);
-    const correctAnswer = current.a * current.b;
+    const correctAnswer = getAnswer(current);
     const isCorrect = answer === correctAnswer;
 
     setFeedback(isCorrect ? 'correct' : 'wrong');
@@ -91,7 +96,7 @@ export default function TrainingPage() {
       setSessionWrong((w) => w + 1);
     }
 
-    const updatedData = updateExercise(data, current.a, current.b, isCorrect);
+    const updatedData = updateExercise(data, current.a, current.b, isCorrect, current.op);
     saveData(updatedData);
     setData(updatedData);
 
@@ -230,7 +235,8 @@ export default function TrainingPage() {
 
   if (!current) return null;
 
-  const correctAnswer = current.a * current.b;
+  const correctAnswer = getAnswer(current);
+  const symbol = getSymbol(current.op);
   const progress = ((questionNum - 1) / TOTAL_QUESTIONS) * 100;
 
   return (
@@ -314,7 +320,7 @@ export default function TrainingPage() {
             letterSpacing: 4,
           }}
         >
-          {current.a} × {current.b} =
+          {current.a} {symbol} {current.b} =
         </Typography>
 
         <Box

@@ -1,9 +1,22 @@
 const STORAGE_KEY = 'math-trainer-data';
 
 const defaultData = {
+  selectedOperation: 'multiply',
+  selections: {
+    multiply: [2, 3, 4, 5],
+    add: [1, 2, 3, 4, 5],
+    subtract: [1, 2, 3, 4, 5],
+  },
+  // Keep legacy field for backward compat
   selectedNumbers: [2, 3, 4, 5],
   exercises: {},
   sessions: [],
+};
+
+export const OPERATIONS = {
+  multiply: { label: 'Multiplication', symbol: '×', numbers: [2, 3, 4, 5, 6, 7, 8, 9] },
+  add: { label: 'Addition', symbol: '+', numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+  subtract: { label: 'Subtraction', symbol: '−', numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
 };
 
 export function loadData() {
@@ -11,12 +24,24 @@ export function loadData() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      return { ...defaultData, ...parsed };
+      const merged = { ...defaultData, ...parsed };
+      // Migrate old format: if no selections object, create from selectedNumbers
+      if (!parsed.selections) {
+        merged.selections = {
+          multiply: parsed.selectedNumbers || defaultData.selections.multiply,
+          add: defaultData.selections.add,
+          subtract: defaultData.selections.subtract,
+        };
+      }
+      if (!parsed.selectedOperation) {
+        merged.selectedOperation = 'multiply';
+      }
+      return merged;
     }
   } catch (e) {
     console.error('Failed to load data from localStorage:', e);
   }
-  return { ...defaultData };
+  return { ...defaultData, selections: { ...defaultData.selections } };
 }
 
 export function saveData(data) {
@@ -27,19 +52,27 @@ export function saveData(data) {
   }
 }
 
-export function getExerciseKey(a, b) {
-  return `${Math.min(a, b)}x${Math.max(a, b)}`;
+export function getExerciseKey(a, b, op = 'multiply') {
+  if (op === 'multiply') {
+    return `mul:${Math.min(a, b)}x${Math.max(a, b)}`;
+  }
+  if (op === 'add') {
+    return `add:${Math.min(a, b)}+${Math.max(a, b)}`;
+  }
+  // subtract: NOT symmetric
+  return `sub:${a}-${b}`;
 }
 
-export function getExerciseData(data, a, b) {
-  const key = getExerciseKey(a, b);
-  return data.exercises[key] || createExercise(a, b);
+export function getExerciseData(data, a, b, op = 'multiply') {
+  const key = getExerciseKey(a, b, op);
+  return data.exercises[key] || createExercise(a, b, op);
 }
 
-export function createExercise(a, b) {
+export function createExercise(a, b, op = 'multiply') {
   return {
-    a: Math.min(a, b),
-    b: Math.max(a, b),
+    a,
+    b,
+    op,
     box: 1,
     correctCount: 0,
     wrongCount: 0,
@@ -48,9 +81,20 @@ export function createExercise(a, b) {
   };
 }
 
-export function updateExercise(data, a, b, correct) {
-  const key = getExerciseKey(a, b);
-  const existing = data.exercises[key] || createExercise(a, b);
+export function getAnswer(exercise) {
+  const { a, b, op } = exercise;
+  if (op === 'add') return a + b;
+  if (op === 'subtract') return a - b;
+  return a * b; // multiply
+}
+
+export function getSymbol(op) {
+  return OPERATIONS[op]?.symbol || '×';
+}
+
+export function updateExercise(data, a, b, correct, op = 'multiply') {
+  const key = getExerciseKey(a, b, op);
+  const existing = data.exercises[key] || createExercise(a, b, op);
 
   const updated = { ...existing, lastSeen: Date.now() };
 
@@ -80,10 +124,16 @@ export function addSession(data, session) {
   };
 }
 
-export function saveSelectedNumbers(data, numbers) {
+export function saveSelections(data, operation, numbers) {
   return {
     ...data,
-    selectedNumbers: numbers,
+    selectedOperation: operation,
+    selections: {
+      ...data.selections,
+      [operation]: numbers,
+    },
+    // Keep legacy field in sync
+    selectedNumbers: operation === 'multiply' ? numbers : data.selectedNumbers,
   };
 }
 
