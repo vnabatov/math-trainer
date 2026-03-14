@@ -29,21 +29,40 @@ const theme = createTheme({
   },
   typography: {
     fontFamily: '"Nunito", "Roboto", "Helvetica", "Arial", sans-serif',
+    fontSize: 16,
+    h2: {
+      fontWeight: 800,
+      fontSize: '3.5rem',
+    },
     h3: {
       fontWeight: 800,
+      fontSize: '2.5rem',
     },
     h4: {
       fontWeight: 700,
+      fontSize: '2rem',
     },
     h5: {
       fontWeight: 700,
+      fontSize: '1.6rem',
     },
     h6: {
       fontWeight: 700,
+      fontSize: '1.35rem',
+    },
+    body1: {
+      fontSize: '1.1rem',
+    },
+    body2: {
+      fontSize: '1rem',
+    },
+    caption: {
+      fontSize: '0.95rem',
     },
     button: {
       fontWeight: 700,
       textTransform: 'none',
+      fontSize: '1.15rem',
     },
   },
   shape: {
@@ -54,12 +73,12 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 12,
-          padding: '12px 24px',
-          fontSize: '1.1rem',
+          padding: '14px 28px',
+          fontSize: '1.2rem',
         },
         sizeLarge: {
-          padding: '14px 32px',
-          fontSize: '1.25rem',
+          padding: '16px 36px',
+          fontSize: '1.4rem',
         },
       },
     },
@@ -67,9 +86,23 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 12,
-          height: 48,
-          fontSize: '1.1rem',
+          height: 52,
+          fontSize: '1.3rem',
           fontWeight: 600,
+        },
+      },
+    },
+    MuiTab: {
+      styleOverrides: {
+        root: {
+          fontSize: '1.1rem',
+        },
+      },
+    },
+    MuiTableCell: {
+      styleOverrides: {
+        root: {
+          fontSize: '1.05rem',
         },
       },
     },

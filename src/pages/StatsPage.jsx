@@ -61,7 +61,7 @@ function GridCell({ bg, value }) {
         bgcolor: bg,
         color: 'rgba(0,0,0,0.65)',
         fontWeight: 600,
-        fontSize: '0.7rem',
+        fontSize: '0.85rem',
       }}
     >
       {value}
@@ -76,7 +76,7 @@ function MasteryGridMultiply({ data, numbers }) {
         display: 'grid',
         gridTemplateColumns: `auto repeat(${numbers.length}, 1fr)`,
         gap: 0.5,
-        fontSize: '0.75rem',
+        fontSize: '0.9rem',
       }}
     >
       <Box sx={{ fontWeight: 700, textAlign: 'center', p: 0.5 }}>×</Box>
@@ -111,7 +111,7 @@ function MasteryGridAddSub({ data, numbers, op }) {
         display: 'grid',
         gridTemplateColumns: `auto repeat(${numbers.length}, 1fr)`,
         gap: 0.5,
-        fontSize: '0.75rem',
+        fontSize: '0.9rem',
       }}
     >
       <Box sx={{ fontWeight: 700, textAlign: 'center', p: 0.5 }}>{symbol}</Box>
@@ -160,7 +160,7 @@ function BoxBadge({ box }) {
       label={`Box ${box}`}
       size="small"
       color={colors[box] || 'default'}
-      sx={{ fontWeight: 600, minWidth: 64, fontSize: '0.75rem', height: 28 }}
+      sx={{ fontWeight: 600, minWidth: 64, fontSize: '0.85rem', height: 30 }}
     />
   );
 }
@@ -234,7 +234,7 @@ export default function StatsPage() {
           <HomeRounded />
         </IconButton>
         <Typography variant="h5" sx={{ flex: 1 }}>
-          Statistics
+          Статистика
         </Typography>
         <IconButton
           onClick={() => setConfirmReset(true)}
@@ -283,7 +283,7 @@ export default function StatsPage() {
             {Math.round(overallMastery)}%
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Mastery
+            Уровень
           </Typography>
         </Box>
         <Box sx={{ textAlign: 'center', minWidth: 80 }}>
@@ -291,7 +291,7 @@ export default function StatsPage() {
             {'⭐'.repeat(overallStars)}{'☆'.repeat(3 - overallStars)}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Rating
+            Рейтинг
           </Typography>
         </Box>
         <Box sx={{ textAlign: 'center', minWidth: 80 }}>
@@ -299,7 +299,7 @@ export default function StatsPage() {
             {totalSessions}
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Sessions
+            Сессий
           </Typography>
         </Box>
         <Box sx={{ textAlign: 'center', minWidth: 80 }}>
@@ -310,7 +310,7 @@ export default function StatsPage() {
             %
           </Typography>
           <Typography variant="caption" color="text.secondary">
-            Accuracy
+            Точность
           </Typography>
         </Box>
       </Paper>
@@ -320,8 +320,8 @@ export default function StatsPage() {
         elevation={0}
         sx={{ p: 2, mb: 2, border: '1px solid', borderColor: 'grey.200' }}
       >
-        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1.5 }}>
-          Mastery Grid
+        <Typography variant="subtitle2" color="text.secondary" sx={{ mb: 1.5, fontSize: '1rem' }}>
+          Таблица прогресса
         </Typography>
         {operation === 'multiply' ? (
           <MasteryGridMultiply data={data} numbers={MUL_NUMBERS} />
@@ -337,18 +337,18 @@ export default function StatsPage() {
         <Table size="small">
           <TableHead>
             <TableRow>
-              <TableCell sx={{ fontWeight: 700 }}>Exercise</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 700 }}>Box</TableCell>
+              <TableCell sx={{ fontWeight: 700 }}>Пример</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 700 }}>Уровень</TableCell>
               <TableCell align="center" sx={{ fontWeight: 700 }}>✓</TableCell>
               <TableCell align="center" sx={{ fontWeight: 700 }}>✗</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 700 }}>Streak</TableCell>
-              <TableCell align="center" sx={{ fontWeight: 700 }}>Avg Time</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 700 }}>Серия</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 700 }}>Ср. время</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {exerciseList.map((ex) => (
               <TableRow key={ex.key}>
-                <TableCell sx={{ fontWeight: 600, fontSize: '0.95rem' }}>
+                <TableCell sx={{ fontWeight: 600, fontSize: '1.1rem' }}>
                   {ex.a} {symbol} {ex.b} = {ex.answer}
                 </TableCell>
                 <TableCell align="center">
@@ -363,7 +363,7 @@ export default function StatsPage() {
                 <TableCell align="center" sx={{ fontWeight: 600 }}>
                   {ex.streak > 0 ? `🔥 ${ex.streak}` : '-'}
                 </TableCell>
-                <TableCell align="center" sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.85rem' }}>
+                <TableCell align="center" sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '1rem' }}>
                   {ex.answerCount > 0
                     ? `${((ex.totalTimeMs || 0) / ex.answerCount / 1000).toFixed(1)}s`
                     : '-'}
@@ -381,23 +381,23 @@ export default function StatsPage() {
           onClick={() => navigate('/')}
           fullWidth
         >
-          Back to Home
+          На главную
         </Button>
       </Box>
 
       {/* Reset confirmation dialog */}
       <Dialog open={confirmReset} onClose={() => setConfirmReset(false)}>
-        <DialogTitle>Reset All Statistics?</DialogTitle>
+        <DialogTitle>Сбросить всю статистику?</DialogTitle>
         <DialogContent>
           <Typography>
-            This will permanently delete all your training progress and
-            statistics. This cannot be undone.
+            Это безвозвратно удалит весь прогресс тренировок и
+            статистику. Отменить нельзя.
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button onClick={() => setConfirmReset(false)}>Cancel</Button>
+          <Button onClick={() => setConfirmReset(false)}>Отмена</Button>
           <Button onClick={handleReset} color="error" variant="contained">
-            Reset
+            Сбросить
           </Button>
         </DialogActions>
       </Dialog>

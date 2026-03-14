@@ -10,6 +10,7 @@ import Fade from '@mui/material/Fade';
 import HomeRounded from '@mui/icons-material/HomeRounded';
 import BackspaceRounded from '@mui/icons-material/BackspaceRounded';
 import CheckRounded from '@mui/icons-material/CheckRounded';
+import confetti from 'canvas-confetti';
 import {
   loadData,
   saveData,
@@ -26,6 +27,123 @@ import {
 
 const TOTAL_QUESTIONS = 20;
 
+// Different confetti effects for correct answers — cycles through them
+const correctEffects = [
+  // 1. Classic burst from bottom-center
+  () => {
+    confetti({
+      particleCount: 40,
+      spread: 60,
+      origin: { y: 0.7 },
+      colors: ['#7c4dff', '#ff6d00', '#00c853', '#ffab00'],
+    });
+  },
+  // 2. Stars burst
+  () => {
+    confetti({
+      particleCount: 30,
+      spread: 80,
+      origin: { y: 0.65 },
+      shapes: ['star'],
+      colors: ['#ffd600', '#ff6d00', '#ff1744'],
+      scalar: 1.2,
+    });
+  },
+  // 3. Two-sided cannons
+  () => {
+    confetti({
+      particleCount: 25,
+      angle: 60,
+      spread: 50,
+      origin: { x: 0, y: 0.6 },
+      colors: ['#7c4dff', '#b388ff', '#ea80fc'],
+    });
+    confetti({
+      particleCount: 25,
+      angle: 120,
+      spread: 50,
+      origin: { x: 1, y: 0.6 },
+      colors: ['#ff6d00', '#ffab40', '#ffd740'],
+    });
+  },
+  // 4. Circle burst
+  () => {
+    confetti({
+      particleCount: 35,
+      spread: 360,
+      startVelocity: 20,
+      origin: { y: 0.5, x: 0.5 },
+      colors: ['#00e676', '#69f0ae', '#b9f6ca', '#1de9b6'],
+      ticks: 60,
+    });
+  },
+  // 5. Shower from top
+  () => {
+    confetti({
+      particleCount: 50,
+      spread: 100,
+      origin: { y: 0, x: 0.5 },
+      gravity: 1.2,
+      colors: ['#e040fb', '#7c4dff', '#536dfe', '#448aff'],
+      startVelocity: 30,
+    });
+  },
+];
+
+// Big celebration for perfect session (all correct)
+function firePerfectSessionConfetti() {
+  const duration = 3000;
+  const end = Date.now() + duration;
+
+  const frame = () => {
+    // Fireworks from both sides
+    confetti({
+      particleCount: 4,
+      angle: 60,
+      spread: 55,
+      origin: { x: 0 },
+      colors: ['#7c4dff', '#ff6d00', '#ffd600', '#00e676'],
+    });
+    confetti({
+      particleCount: 4,
+      angle: 120,
+      spread: 55,
+      origin: { x: 1 },
+      colors: ['#e040fb', '#536dfe', '#ff1744', '#00bcd4'],
+    });
+
+    if (Date.now() < end) {
+      requestAnimationFrame(frame);
+    }
+  };
+  frame();
+
+  // Big center burst after a short delay
+  setTimeout(() => {
+    confetti({
+      particleCount: 150,
+      spread: 160,
+      origin: { y: 0.6, x: 0.5 },
+      colors: ['#ffd600', '#ff6d00', '#ff1744', '#7c4dff', '#00e676'],
+      shapes: ['star', 'circle'],
+      scalar: 1.3,
+      startVelocity: 45,
+    });
+  }, 500);
+}
+
+// Good session celebration (≥70%)
+function fireGoodSessionConfetti() {
+  confetti({
+    particleCount: 80,
+    spread: 100,
+    origin: { y: 0.6 },
+    colors: ['#7c4dff', '#ff6d00', '#ffd600', '#00c853'],
+    shapes: ['star', 'circle'],
+    scalar: 1.1,
+  });
+}
+
 export default function TrainingPage() {
   const navigate = useNavigate();
   const [data, setData] = useState(loadData);
@@ -41,6 +159,7 @@ export default function TrainingPage() {
   const [sessionTotalTime, setSessionTotalTime] = useState(0);
   const feedbackTimeout = useRef(null);
   const questionStartTime = useRef(Date.now());
+  const correctCount = useRef(0); // tracks correct answers for confetti variety
 
   // Initialize exercises from selected numbers and operation
   useEffect(() => {
@@ -97,6 +216,10 @@ export default function TrainingPage() {
     setSessionTotalTime((t) => t + elapsed);
 
     if (isCorrect) {
+      // Fire a different confetti effect each time
+      const effectIndex = correctCount.current % correctEffects.length;
+      correctEffects[effectIndex]();
+      correctCount.current += 1;
       setSessionCorrect((c) => c + 1);
     } else {
       setSessionWrong((w) => w + 1);
@@ -135,12 +258,25 @@ export default function TrainingPage() {
     };
   }, []);
 
+  // Fire session confetti once when session completes
+  useEffect(() => {
+    if (!sessionDone) return;
+    const total = sessionCorrect + sessionWrong;
+    const pct = total > 0 ? Math.round((sessionCorrect / total) * 100) : 0;
+    if (pct === 100) {
+      firePerfectSessionConfetti();
+    } else if (pct >= 70) {
+      fireGoodSessionConfetti();
+    }
+  }, [sessionDone]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // Session complete screen
   if (sessionDone) {
     const total = sessionCorrect + sessionWrong;
     const pct = total > 0 ? Math.round((sessionCorrect / total) * 100) : 0;
     const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
     const avgTimeSec = total > 0 ? (sessionTotalTime / total / 1000).toFixed(1) : '0.0';
+    const isPerfect = pct === 100;
 
     return (
       <Box
@@ -157,13 +293,15 @@ export default function TrainingPage() {
         }}
       >
         <Typography variant="h4" sx={{ mb: 2, textAlign: 'center' }}>
-          {pct >= 90
-            ? 'Amazing! 🌟'
+          {isPerfect
+            ? 'Идеально! 🏆🌟🏆'
+            : pct >= 90
+            ? 'Великолепно! 🌟'
             : pct >= 70
-            ? 'Great job! 👏'
+            ? 'Отличная работа! 👏'
             : pct >= 50
-            ? 'Good effort! 💪'
-            : 'Keep practicing! 📚'}
+            ? 'Хороший результат! 💪'
+            : 'Продолжай тренироваться! 📚'}
         </Typography>
 
         <Paper
@@ -198,7 +336,7 @@ export default function TrainingPage() {
                 {sessionCorrect}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Correct
+                Верно
               </Typography>
             </Box>
             <Box>
@@ -206,15 +344,15 @@ export default function TrainingPage() {
                 {sessionWrong}
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Wrong
+                Ошибки
               </Typography>
             </Box>
             <Box>
               <Typography variant="h4" color="text.secondary">
-                {avgTimeSec}s
+                {avgTimeSec}с
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Avg Time
+                Ср. время
               </Typography>
             </Box>
           </Box>
@@ -232,7 +370,7 @@ export default function TrainingPage() {
             background: 'linear-gradient(135deg, #7c4dff 0%, #651fff 100%)',
           }}
         >
-          Train Again
+          Ещё раз
         </Button>
 
         <Button
@@ -242,7 +380,7 @@ export default function TrainingPage() {
           onClick={() => navigate('/')}
           sx={{ width: '100%', maxWidth: 300 }}
         >
-          Home
+          На главную
         </Button>
       </Box>
     );
@@ -330,7 +468,7 @@ export default function TrainingPage() {
         <Typography
           variant="h3"
           sx={{
-            fontSize: { xs: '2.5rem', sm: '3.5rem' },
+            fontSize: { xs: '3rem', sm: '4rem' },
             color: 'text.primary',
             letterSpacing: 4,
           }}
@@ -357,7 +495,7 @@ export default function TrainingPage() {
           <Typography
             variant="h3"
             sx={{
-              fontSize: { xs: '2.5rem', sm: '3.5rem' },
+              fontSize: { xs: '3rem', sm: '4rem' },
               color: feedback
                 ? feedback === 'correct'
                   ? 'success.main'
@@ -378,7 +516,7 @@ export default function TrainingPage() {
               color="error.main"
               sx={{ mt: 1.5, fontWeight: 700 }}
             >
-              Correct answer: {correctAnswer}
+              Правильный ответ: {correctAnswer}
             </Typography>
           </Fade>
         )}
@@ -403,8 +541,8 @@ export default function TrainingPage() {
               onClick={() => handleKeyPress(String(digit))}
               disabled={!!feedback}
               sx={{
-                py: 2,
-                fontSize: '1.8rem',
+                py: 2.5,
+                fontSize: '2.2rem',
                 fontWeight: 700,
                 bgcolor: 'white',
                 color: 'text.primary',
@@ -423,7 +561,7 @@ export default function TrainingPage() {
                   bgcolor: 'grey.100',
                   color: 'grey.400',
                 },
-                minHeight: 56,
+                minHeight: 64,
               }}
             >
               {digit}
@@ -453,8 +591,8 @@ export default function TrainingPage() {
             onClick={() => handleKeyPress('0')}
             disabled={!!feedback}
             sx={{
-              py: 2,
-              fontSize: '1.8rem',
+              py: 2.5,
+              fontSize: '2.2rem',
               fontWeight: 700,
               bgcolor: 'white',
               color: 'text.primary',
@@ -466,7 +604,7 @@ export default function TrainingPage() {
                 color: 'white',
                 borderColor: 'primary.light',
               },
-              minHeight: 56,
+              minHeight: 64,
             }}
           >
             0

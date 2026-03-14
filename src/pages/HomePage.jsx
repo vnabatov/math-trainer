@@ -77,7 +77,7 @@ export default function HomePage() {
           textAlign: 'center',
         }}
       >
-        Math Trainer
+        Математический тренажёр
       </Typography>
 
       <Typography
@@ -85,7 +85,7 @@ export default function HomePage() {
         color="text.secondary"
         sx={{ mb: 3, textAlign: 'center', fontWeight: 600 }}
       >
-        Practice math skills!
+        Тренируй математику!
       </Typography>
 
       {/* Operation Tabs */}
@@ -125,7 +125,7 @@ export default function HomePage() {
             variant="h6"
             sx={{ mb: 2, textAlign: 'center', color: 'primary.main' }}
           >
-            Select numbers to practice
+            Выбери числа для тренировки
           </Typography>
 
           <Box
@@ -163,7 +163,7 @@ export default function HomePage() {
               color="text.secondary"
               sx={{ display: 'block', textAlign: 'center', mt: 1.5 }}
             >
-              Practice subtracting these numbers (e.g. select 3 → "10 − 3 = ?")
+              Тренировка вычитания этих чисел (например, выбери 3 → «10 − 3 = ?»)
             </Typography>
           )}
         </Box>
@@ -187,7 +187,7 @@ export default function HomePage() {
             },
           }}
         >
-          Start Training
+          Начать тренировку
         </Button>
 
         <Button
@@ -197,7 +197,7 @@ export default function HomePage() {
           onClick={() => navigate('/stats')}
           sx={{ py: 1.5 }}
         >
-          View Statistics
+          Статистика
         </Button>
       </Stack>
     </Box>

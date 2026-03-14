@@ -14,9 +14,9 @@ const defaultData = {
 };
 
 export const OPERATIONS = {
-  multiply: { label: 'Multiplication', symbol: '×', numbers: [2, 3, 4, 5, 6, 7, 8, 9] },
-  add: { label: 'Addition', symbol: '+', numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
-  subtract: { label: 'Subtraction', symbol: '−', numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+  multiply: { label: 'Умножение', symbol: '×', numbers: [2, 3, 4, 5, 6, 7, 8, 9] },
+  add: { label: 'Сложение', symbol: '+', numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
+  subtract: { label: 'Вычитание', symbol: '−', numbers: [1, 2, 3, 4, 5, 6, 7, 8, 9] },
 };
 
 export function loadData() {
