@@ -163,7 +163,6 @@ export default function HomePage() {
               color="text.secondary"
               sx={{ display: 'block', textAlign: 'center', mt: 1.5 }}
             >
-              Тренировка вычитания этих чисел (например, выбери 3 → «10 − 3 = ?»)
             </Typography>
           )}
         </Box>

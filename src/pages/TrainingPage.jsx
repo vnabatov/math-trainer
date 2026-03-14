@@ -401,6 +401,7 @@ export default function TrainingPage() {
         maxWidth: { xs: 500, md: '100%' },
         mx: 'auto',
         width: '100%',
+        width: '100%',
         p: 2,
         '@media (orientation: landscape) and (min-width: 600px)': {
           maxWidth: 960,
