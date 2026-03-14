@@ -38,7 +38,9 @@ export default function TrainingPage() {
   const [sessionWrong, setSessionWrong] = useState(0);
   const [sessionDone, setSessionDone] = useState(false);
   const [lastExercise, setLastExercise] = useState(null);
+  const [sessionTotalTime, setSessionTotalTime] = useState(0);
   const feedbackTimeout = useRef(null);
+  const questionStartTime = useRef(Date.now());
 
   // Initialize exercises from selected numbers and operation
   useEffect(() => {
@@ -51,6 +53,7 @@ export default function TrainingPage() {
     const first = selectNextExercise(exs, loadedData, null);
     setCurrent(first);
     setQuestionNum(1);
+    questionStartTime.current = Date.now();
   }, []);
 
   const nextQuestion = useCallback(
@@ -77,6 +80,7 @@ export default function TrainingPage() {
       setLastExercise(currentExercise);
       setQuestionNum((q) => q + 1);
       setInput('');
+      questionStartTime.current = Date.now();
     },
     [exercises, questionNum, sessionCorrect, sessionWrong]
   );
@@ -87,8 +91,10 @@ export default function TrainingPage() {
     const answer = parseInt(input, 10);
     const correctAnswer = getAnswer(current);
     const isCorrect = answer === correctAnswer;
+    const elapsed = Date.now() - questionStartTime.current;
 
     setFeedback(isCorrect ? 'correct' : 'wrong');
+    setSessionTotalTime((t) => t + elapsed);
 
     if (isCorrect) {
       setSessionCorrect((c) => c + 1);
@@ -96,7 +102,7 @@ export default function TrainingPage() {
       setSessionWrong((w) => w + 1);
     }
 
-    const updatedData = updateExercise(data, current.a, current.b, isCorrect, current.op);
+    const updatedData = updateExercise(data, current.a, current.b, isCorrect, current.op, elapsed);
     saveData(updatedData);
     setData(updatedData);
 
@@ -134,6 +140,7 @@ export default function TrainingPage() {
     const total = sessionCorrect + sessionWrong;
     const pct = total > 0 ? Math.round((sessionCorrect / total) * 100) : 0;
     const stars = pct >= 90 ? 3 : pct >= 70 ? 2 : pct >= 50 ? 1 : 0;
+    const avgTimeSec = total > 0 ? (sessionTotalTime / total / 1000).toFixed(1) : '0.0';
 
     return (
       <Box
@@ -200,6 +207,14 @@ export default function TrainingPage() {
               </Typography>
               <Typography variant="body2" color="text.secondary">
                 Wrong
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="h4" color="text.secondary">
+                {avgTimeSec}s
+              </Typography>
+              <Typography variant="body2" color="text.secondary">
+                Avg Time
               </Typography>
             </Box>
           </Box>

@@ -78,6 +78,8 @@ export function createExercise(a, b, op = 'multiply') {
     wrongCount: 0,
     streak: 0,
     lastSeen: null,
+    totalTimeMs: 0,
+    answerCount: 0,
   };
 }
 
@@ -92,11 +94,15 @@ export function getSymbol(op) {
   return OPERATIONS[op]?.symbol || '×';
 }
 
-export function updateExercise(data, a, b, correct, op = 'multiply') {
+export function updateExercise(data, a, b, correct, op = 'multiply', timeMs = 0) {
   const key = getExerciseKey(a, b, op);
   const existing = data.exercises[key] || createExercise(a, b, op);
 
   const updated = { ...existing, lastSeen: Date.now() };
+
+  // Track answer time
+  updated.totalTimeMs = (updated.totalTimeMs || 0) + timeMs;
+  updated.answerCount = (updated.answerCount || 0) + 1;
 
   if (correct) {
     updated.correctCount += 1;

@@ -342,6 +342,7 @@ export default function StatsPage() {
               <TableCell align="center" sx={{ fontWeight: 700 }}>✓</TableCell>
               <TableCell align="center" sx={{ fontWeight: 700 }}>✗</TableCell>
               <TableCell align="center" sx={{ fontWeight: 700 }}>Streak</TableCell>
+              <TableCell align="center" sx={{ fontWeight: 700 }}>Avg Time</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -361,6 +362,11 @@ export default function StatsPage() {
                 </TableCell>
                 <TableCell align="center" sx={{ fontWeight: 600 }}>
                   {ex.streak > 0 ? `🔥 ${ex.streak}` : '-'}
+                </TableCell>
+                <TableCell align="center" sx={{ fontWeight: 600, color: 'text.secondary', fontSize: '0.85rem' }}>
+                  {ex.answerCount > 0
+                    ? `${((ex.totalTimeMs || 0) / ex.answerCount / 1000).toFixed(1)}s`
+                    : '-'}
                 </TableCell>
               </TableRow>
             ))}
